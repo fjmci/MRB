@@ -1,7 +1,7 @@
 <%-- 
     Document   : index
-    Created on : Aug 22, 2012, 11:06:20 PM
-    Author     : FJMCI
+    Created on : 22-ago-2012, 21:02:57
+    Author     : Juampi
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
