@@ -26,7 +26,7 @@ public class administradorBD {
         return singleton;
     }
 
-     public void setUSER(String USER) {
+    public void setUSER(String USER) {
         this.USER = USER;
     }
 
