@@ -1,69 +1,95 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
 
-
-/**
- *
- * @author jsoto
- */
 public class administradorBD {
 
-/*private Connection conn;
-private boolean estadoOrden;
+    private final String URL = "jdbc:mysql://localhost:3306/test";
+    private final String USER = "roger";
+    private final String PASSWORD = "toast";
+    private final String DRIVER = "com.mysql.jdbc.Driver";
+    private Connection conn;
+    private static administradorBD singleton;
+    public static final String SELECT_STRING = "";
 
-    public administradorBD() {
-        setEstadoOrden(false);
+    private administradorBD() {
     }
 
-    public administradorBD(Connection conn) {
-        setConn(conn);
-        setEstadoOrden(false);
-        * 
-        * 
-        * 
-        *
-        * 
-    }*/
+    public static administradorBD getInstance() {
+        if (singleton == null) {
+            singleton = new administradorBD();
+        }
+        return singleton;
+    }
 
- /*
-  public Connection conectar(){
-
-      try {
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
-            } catch (InstantiationException ex) {
-                Logger.getLogger(administradorBD.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(administradorBD.class.getName()).log(Level.SEVERE, null, ex);
+    private Connection getConnection(boolean resetConnection) throws Exception {
+        if (resetConnection) {
+            Class.forName(DRIVER);
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+        } else {
+            if (conn == null) {
+                Class.forName(DRIVER);
+                conn = DriverManager.getConnection(URL, USER, PASSWORD);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(administradorBD.class.getName()).log(Level.SEVERE, null, ex);
         }
-        try {
-            //setConn((Connection) DriverManager.getConnection("jdbc:mysql://localhost/inventario", "root", "databasepccrlocal"));
-            setConn((Connection) DriverManager.getConnection("jdbc:mysql://localhost/inventario", "root", "admin"));
-            //System.out.print("se conecto a la bd");
-        } catch (SQLException ex) {
-            Logger.getLogger(administradorBD.class.getName()).log(Level.SEVERE, null, ex);
+        return conn;
+    }
+
+    public ResultSet selectQuery(String p_query, Properties p_parameters) throws Exception {
+        PreparedStatement s = getConnection(false).prepareStatement("");
+        String whereClause="";
+        if (p_parameters != null) {
+            int index = 1;
+            whereClause = " WHERE ";
+            for (String key : p_parameters.stringPropertyNames()) {
+                String value = p_parameters.getProperty(key);
+                whereClause +=key+"=? AND";
+                s.setString(index, value);
+                index++;
+            }
+            whereClause = whereClause.substring(0, whereClause.length()-4);
         }
-
-      if (getConn() != null) {/*? si esta conectado
-        return getConn();
-        }else{
-        return null;
+        ResultSet rs = s.executeQuery(p_query+whereClause);
+        return rs;
+    }
+    
+    public boolean updateQuery(String p_query, String p_table, Properties p_parameters) throws Exception
+    {
+        PreparedStatement s = getConnection(false).prepareStatement("");
+        String whereClause="";
+        if (p_parameters != null) {
+            int index = 1;
+            whereClause = " WHERE ";
+            for (String key : p_parameters.stringPropertyNames()) {
+                String value = p_parameters.getProperty(key);
+                whereClause +=key+"=? AND";
+                s.setString(index, value);
+                index++;
+            }
+            whereClause = whereClause.substring(0, whereClause.length()-4);
         }
-
-  } 
-  */
-
-} // fin clase
+        return s.execute(p_query+whereClause);
+    }
+    
+    public boolean insertQuery(String p_query, String[] p_parameters) throws Exception {
+        PreparedStatement s = getConnection(false).prepareStatement("");
+        if (p_parameters != null) {
+            int index = 1;
+            for (String value : p_parameters) {
+                s.setString(index, value);
+                index++;
+            }
+        }
+        return s.execute(p_query);
+    }
+    
+    public boolean deleteQuery(String p_table, String p_id) throws Exception {
+        String query=String.format("DELETE FROM %s WHERE %s_ID=%s",p_table, p_table, p_id);
+        PreparedStatement s = getConnection(false).prepareStatement(query);
+        return s.execute();
+    }
+    
+}
