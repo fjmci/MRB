@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class administradorBD {
 
-    private String CONNECTION_STRING ="jdbc:mysql://";
+    private String CONNECTION_STRING = "jdbc:mysql://";
     private String URL = "localhost:3306/test";
     private String USER = "roger";
     private String PASSWORD = "toast";
@@ -33,19 +33,19 @@ public class administradorBD {
     public void setPASSWORD(String PASSWORD) {
         this.PASSWORD = PASSWORD;
     }
-    
+
     public void setURL(String URL) {
         this.URL = URL;
     }
-    
+
     private Connection getConnection(boolean resetConnection) throws Exception {
         if (resetConnection) {
             Class.forName(DRIVER);
-            conn = DriverManager.getConnection(CONNECTION_STRING+URL, USER, PASSWORD);
+            conn = DriverManager.getConnection(CONNECTION_STRING + URL, USER, PASSWORD);
         } else {
             if (conn == null) {
                 Class.forName(DRIVER);
-                conn = DriverManager.getConnection(CONNECTION_STRING+URL, USER, PASSWORD);
+                conn = DriverManager.getConnection(CONNECTION_STRING + URL, USER, PASSWORD);
             }
         }
         return conn;
@@ -106,7 +106,7 @@ public class administradorBD {
 
     public boolean login(String p_username, String p_password) throws Exception {
         boolean entrada = false;
-        String username = "",password = "";
+        String username = "", password = "";
         String sqlStatement = "SELECT * FROM USER WHERE USERNAME=? AND PASSWORD=?";
         PreparedStatement st = getConnection(false).prepareStatement(sqlStatement);
         st.setString(1, p_username);
